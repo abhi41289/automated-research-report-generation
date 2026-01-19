@@ -14,3 +14,22 @@ logs
 archive
 
 generated_report/
+
+# macOS metadata files
+._*
+.DS_Store
+
+# Database files
+users.db
+*.db
+
+# IDE and editor files
+.vscode/
+.idea/
+.claude/
+
+# Testing
+.pytest_cache/
+htmlcov/
+.coverage
+*.cover

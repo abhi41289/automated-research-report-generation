@@ -67,9 +67,9 @@ async def dashboard(request: Request):
     return request.app.templates.TemplateResponse("dashboard.html", {"request": request, "user": SESSIONS[session_id]})
 
 @router.post("/generate_report", response_class=HTMLResponse)
-async def generate_report(request: Request, topic: str = Form(...)):
+async def generate_report(request: Request, topic: str = Form(...), max_analysts: int = Form(1)):
     service = ReportService()
-    result = service.start_report_generation(topic, 3)
+    result = service.start_report_generation(topic, max_analysts)
     thread_id = result["thread_id"] 
 
     return request.app.templates.TemplateResponse(
