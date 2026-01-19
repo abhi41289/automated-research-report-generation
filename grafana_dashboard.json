@@ -1,0 +1,223 @@
+{
+  "dashboard": {
+    "title": "AI QA Testing Metrics Dashboard",
+    "tags": ["ai", "qa", "llm", "testing"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "AI Quality Metrics - F1 Score",
+        "type": "graph",
+        "gridPos": {"x": 0, "y": 0, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "ai_quality_f1_score",
+            "legendFormat": "{{provider}} - {{model}}",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          {
+            "label": "F1 Score",
+            "min": 0,
+            "max": 1
+          }
+        ],
+        "alert": {
+          "conditions": [
+            {
+              "evaluator": {"params": [0.80], "type": "lt"},
+              "operator": {"type": "and"},
+              "query": {"params": ["A", "5m", "now"]},
+              "reducer": {"params": [], "type": "avg"},
+              "type": "query"
+            }
+          ],
+          "name": "F1 Score Below Threshold"
+        }
+      },
+      {
+        "id": 2,
+        "title": "Precision vs Recall",
+        "type": "graph",
+        "gridPos": {"x": 12, "y": 0, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "ai_quality_precision",
+            "legendFormat": "Precision - {{provider}}",
+            "refId": "A"
+          },
+          {
+            "expr": "ai_quality_recall",
+            "legendFormat": "Recall - {{provider}}",
+            "refId": "B"
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Hallucination Rate",
+        "type": "singlestat",
+        "gridPos": {"x": 0, "y": 8, "w": 6, "h": 4},
+        "targets": [
+          {
+            "expr": "ai_quality_hallucination_rate",
+            "refId": "A"
+          }
+        ],
+        "thresholds": "0.05,0.10",
+        "colors": ["green", "yellow", "red"],
+        "format": "percentunit",
+        "gauge": {
+          "show": true,
+          "minValue": 0,
+          "maxValue": 0.20
+        }
+      },
+      {
+        "id": 4,
+        "title": "Citation Accuracy",
+        "type": "singlestat",
+        "gridPos": {"x": 6, "y": 8, "w": 6, "h": 4},
+        "targets": [
+          {
+            "expr": "ai_quality_citation_accuracy",
+            "refId": "A"
+          }
+        ],
+        "thresholds": "0.90,0.95",
+        "colors": ["red", "yellow", "green"],
+        "format": "percentunit",
+        "gauge": {
+          "show": true,
+          "minValue": 0,
+          "maxValue": 1
+        }
+      },
+      {
+        "id": 5,
+        "title": "BLEU Score (Text Generation Quality)",
+        "type": "graph",
+        "gridPos": {"x": 12, "y": 8, "w": 12, "h": 4},
+        "targets": [
+          {
+            "expr": "ai_quality_bleu_score",
+            "legendFormat": "{{provider}} - {{model}}",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "LLM Latency (P50, P95, P99)",
+        "type": "graph",
+        "gridPos": {"x": 0, "y": 12, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.50, sum(rate(llm_latency_seconds_bucket[5m])) by (le, provider))",
+            "legendFormat": "P50 - {{provider}}",
+            "refId": "A"
+          },
+          {
+            "expr": "histogram_quantile(0.95, sum(rate(llm_latency_seconds_bucket[5m])) by (le, provider))",
+            "legendFormat": "P95 - {{provider}}",
+            "refId": "B"
+          },
+          {
+            "expr": "histogram_quantile(0.99, sum(rate(llm_latency_seconds_bucket[5m])) by (le, provider))",
+            "legendFormat": "P99 - {{provider}}",
+            "refId": "C"
+          }
+        ],
+        "yaxes": [
+          {
+            "label": "Latency (seconds)",
+            "format": "s"
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "Token Usage by Provider",
+        "type": "graph",
+        "gridPos": {"x": 12, "y": 12, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "rate(llm_tokens_total[5m])",
+            "legendFormat": "{{provider}} - {{token_type}}",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          {
+            "label": "Tokens/sec"
+          }
+        ]
+      },
+      {
+        "id": 8,
+        "title": "LLM Cost by Provider",
+        "type": "graph",
+        "gridPos": {"x": 0, "y": 20, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "rate(llm_cost_usd_total[5m]) * 60",
+            "legendFormat": "{{provider}} - {{model}}",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          {
+            "label": "Cost (USD/minute)",
+            "format": "currencyUSD"
+          }
+        ]
+      },
+      {
+        "id": 9,
+        "title": "Test Pass Rate",
+        "type": "singlestat",
+        "gridPos": {"x": 12, "y": 20, "w": 6, "h": 4},
+        "targets": [
+          {
+            "expr": "test_pass_rate",
+            "refId": "A"
+          }
+        ],
+        "thresholds": "80,95",
+        "colors": ["red", "yellow", "green"],
+        "format": "percent",
+        "gauge": {
+          "show": true,
+          "minValue": 0,
+          "maxValue": 100
+        }
+      },
+      {
+        "id": 10,
+        "title": "System Error Rate",
+        "type": "singlestat",
+        "gridPos": {"x": 18, "y": 20, "w": 6, "h": 4},
+        "targets": [
+          {
+            "expr": "system_error_rate",
+            "refId": "A"
+          }
+        ],
+        "thresholds": "5,10",
+        "colors": ["green", "yellow", "red"],
+        "format": "percent",
+        "gauge": {
+          "show": true,
+          "minValue": 0,
+          "maxValue": 20
+        }
+      }
+    ],
+    "refresh": "10s",
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    }
+  }
+}
